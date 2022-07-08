@@ -2,20 +2,25 @@
 // 1/ Récupérer les données en javascript sur les séries présentes dans le fichier datas/series.json.
 let series;
 try {
-    fetch ("datas/series.json")
-    .then(response => response.json())
-    .then(json =>{
-        series = json;
+    fetch("datas/series.json")
+        .then(response => response.json())
+        .then(json => {
+            series = json;
 
-        // Display
-        displaySeries(json);
-        displayStyles(getStyles(json));
+            // Display
+            displaySeries(json);
+            displayStyles(getStyles(json));
 
-        // Event handlers
-        manageClickStyles();
-        manageSeriesClick()
-        manageFavClick()
-    }); 
+            // Event handlers
+            manageClickStyles();
+            manageSeriesClick()
+            manageFavClick()
+            manageSortClick()
+            manageResetFilterClick()
+            displayCountry(getCountry())
+            manageClickCountries()
+            // console.log(getIdFromSortedSeries())
+        });
 } catch (error) {
     console.error("error" + error);
 }
@@ -24,7 +29,7 @@ try {
 
 function displaySeries() {
     const element = document.getElementById("container");
-    for(const serie of series) {
+    for (const serie of series) {
         element.innerHTML += `<li data-id="${serie.id}"><h2>${serie.name}</h2><img class="image" src="${serie.image}"> </li>`;
     }
 
@@ -37,18 +42,18 @@ function getStyles() {
     const array = []
     series.forEach(serie => {
         serie.styles.forEach(style => {
-            if(!array.includes(style)) {
+            if (!array.includes(style)) {
                 array.push(style)
             }
-        }) 
+        })
     });
     return array;
 }
 
 // 4/ Créer une fonction qui affiche la liste des styles de séries.
-function displayStyles(styles){
-    styles.forEach(style =>{
-        document.getElementById("styles").innerHTML+=`<li data-style="${style}">${style} (${countSeriesFromStyle(style)}) </li>`
+function displayStyles(styles) {
+    styles.forEach(style => {
+        document.getElementById("styles").innerHTML += `<li data-style="${style}">${style} (${countSeriesFromStyle(style)}) </li>`
     })
 
     // document.getElementById("styles").innerHTML = styles.map(style => `<li>${style}</li>`).join("")
@@ -56,10 +61,10 @@ function displayStyles(styles){
 
 // 5/ Créer une fonction qui compte le nombre de séries d'un style.
 
-function countSeriesFromStyle(style){
+function countSeriesFromStyle(style) {
     let nbrSeries = 0;
     series.forEach(serie => {
-        if(serie.styles.includes(style)){
+        if (serie.styles.includes(style)) {
             nbrSeries++;
         }
     });
@@ -74,37 +79,38 @@ function countSeriesFromStyle(style){
 
 // 7/ Créer une fonction qui retourne les ID des séries d'un style.
 
-function getIdFromStyle(style){
+function getIdFromStyle(style) {
     return series.filter(serie => serie.styles.includes(style)).map(serie => serie.id);
 }
 
 // 8/ Créer une fonction qui gère les clics sur les styles afin de les souligner lorsqu'ils sont cliqués.
 
-function manageClickStyles(){
-    document.querySelectorAll("#styles > li").forEach(li =>{
-        li.addEventListener("click", function(event){
+function manageClickStyles() {
+    document.querySelectorAll("#styles > li").forEach(li => {
+        li.addEventListener("click", function (event) {
             filterStyle(this.dataset.style)
             resetStyles()
             this.classList.add("underline")
+            displayResetFilter()
         })
     });
 }
 
 // 9/ Créer une fonction pour retirer le soulignement de tous les styles.
 //      Utiliser cette fonction pour qu'à la question 8/ seul le dernier style cliqué soit souligné.
-function resetStyles(){
-    document.querySelectorAll("#styles > li").forEach(li =>{
+function resetStyles() {
+    document.querySelectorAll("#styles > li").forEach(li => {
         li.classList.remove("underline")
-    });    
+    });
 }
 
 // 10/ Créer une fonction qui affiche dans la page uniquement les séries dont les id sont en paramètre.
-function displaySeriesById(array){
-    document.querySelectorAll("#container > li").forEach(li =>{
+function displaySeriesById(array) {
+    document.querySelectorAll("#container > li").forEach(li => {
         if (array.includes(parseInt(li.dataset.id))) li.classList.remove("hidden")
         else li.classList.add("hidden")
     });
-} 
+}
 
 // 11/ Modifier la fonction de la question 8/ afin de filtrer les séries au clic sur un style.
 
@@ -114,10 +120,10 @@ function filterStyle(style) {
 
 // 12/ Créer une fonction qui retourne toutes les données d'une série à partir de son ID
 
-function getDataFromId(id){
+function getDataFromId(id) {
     let data;
     series.forEach(serie => {
-        if(serie.id === parseInt(id)) data = serie;
+        if (serie.id === parseInt(id)) data = serie;
     });
     return data;
 
@@ -126,9 +132,9 @@ function getDataFromId(id){
 
 // 13/ Créer une fonction qui permet d'afficher l'id d'une série dans la console lorsque l'on clique dessus.
 
-function displayIdFromClick(){
-    document.querySelectorAll("#container > li").forEach(li =>{
-        li.addEventListener("click", function(event){
+function displayIdFromClick() {
+    document.querySelectorAll("#container > li").forEach(li => {
+        li.addEventListener("click", function (event) {
             console.log(getDataFromId(this.dataset.id));
         })
     })
@@ -139,29 +145,30 @@ function displayIdFromClick(){
 // 15/ Créer une fonction permettant d'ajouter une série à une liste de favoris.
 // Une série ne peut être présente qu'une fois dans le tableau.
 let favList = [];
-function addSerieToFav(serie){
-   if (!favList.includes(serie)) {
-     favList.push(serie)
-   } 
-   displayFavList();
+function addSerieToFav(serie) {
+    if (!favList.includes(serie)) {
+        favList.push(serie)
+    }
+    displayFavList();
 }
- 
+
 // 16/ Créer une fonction pour ajouter une série en favoris au click.
 
-function manageSeriesClick(){
-    document.querySelectorAll("#container > li").forEach(li =>{
-        li.addEventListener("click",function (event) {
+function manageSeriesClick() {
+    document.querySelectorAll("#container > li").forEach(li => {
+        li.addEventListener("click", function (event) {
             addSerieToFav(getDataFromId(this.dataset.id))
+            
         })
     })
 }
 
 // 17/ Créer une fonction qui affiche le nom des séries favorites dans la page
 
-function displayFavList(){
+function displayFavList() {
     let html = "";
     favList.forEach(serie => {
-       html += `<li data-id="${serie.id}">${serie.name}</li>` 
+        html += `<li data-id="${serie.id}">${serie.name}</li>`
     })
     document.getElementById("favoris").innerHTML = html;
     displayNumberOfFav();
@@ -170,44 +177,119 @@ function displayFavList(){
 // 18/ Créer une fonction permettant de retirer une série de la liste des favoris de par son id.
 
 function removeSerieFromFav(id) {
-   favList = favList.filter(serie => serie.id !== parseInt(id));
-   displayFavList();
+    favList = favList.filter(serie => serie.id !== parseInt(id));
+    displayFavList();
 }
 
 // 19/ Créez une fonction qui fasse qu'au clic sur un favoris il se retire de la liste.
 
 function manageFavClick() {
-    document.getElementById("favoris").addEventListener("click", function(event){
-        if(event.target.hasAttribute("data-id")) removeSerieFromFav(event.target.dataset.id);    
+    document.getElementById("favoris").addEventListener("click", function (event) {
+        if (event.target.hasAttribute("data-id")) removeSerieFromFav(event.target.dataset.id);
+        
     })
 }
 
 
 // 20/ Créer une fonction qui affiche le nombre de favoris en titre de la liste des favoris.
-function displayNumberOfFav(){
-    document.getElementById("fav-count").innerHTML=favList.length
+function displayNumberOfFav() {
+    document.getElementById("fav-count").innerHTML = favList.length
 }
 
 // 21/ Créer une fonction qui retourne les id des séries par ordre d'année de sortie.
-
+function getIdFromOldToNewSeries() {
+    let sortedSeries = []
+    series.sort((a, b) => a.launchYear - b.launchYear).forEach(serie => sortedSeries.push(serie.id))
+    return sortedSeries
+}
 
 // 22/ Créer une fonction qui affiche les séries dans la page dans l'ordre des ids passés en paramètre.
+function displaySortedSeriesById(array) {
+    array.forEach(id => {
+        document.querySelectorAll("#container > li").forEach(li => {
 
+            if (li.dataset.id == id) {
+                document.getElementById("container").appendChild(li)
+            }
+        })
+    })
+}
 
 // 23/ Créer une fonction qui permet de gérer au clic sur un lien dans la page le tri des series par années croissantes
-
+function manageSortClick() {
+    document.querySelectorAll("#sort-list > li").forEach(li => {
+        li.addEventListener("click", function (event) {
+            event.preventDefault()
+            if (this.dataset.order === "oldest") {
+                displaySortedSeriesById(getIdFromOldToNewSeries())
+            }
+            if (this.dataset.order === "newest") {
+                displaySortedSeriesById(getIdFromOldToNewSeries().reverse())
+            }
+        }
+        )
+    })
+}
 
 // 24/ Permettez à la fonction précédente de gérer un click sur un autre lien pour trier les series par années décroissantes.
 
 
 // 25/ Créer une fonction qui désactive le filtre activé.
-
+function resetFilter() {
+    document.querySelectorAll("#container > li").forEach(li => {
+        resetStyles()
+        li.classList.remove("hidden")
+    })
+}
 
 // 26/ Créer une fonction qui permet de gérer au clic sur un lien la désactivation des filtres.
-
+function manageResetFilterClick() {
+    document.getElementById("disable-filter").addEventListener("click", function(event) {
+        event.preventDefault()
+        resetFilter()
+        document.getElementById("disable-filter").classList.add("hidden")
+    })
+}
 
 // 27/ Créer une fonction qui gère l'affichage de ce lien de désactivation des filtres uniquement quand un filtre est activé.
-
+function displayResetFilter(){
+    document.getElementById("disable-filter").classList.remove("hidden")
+}
 
 // 28/ Créer l'ensemble des fonctions permettant d'ajouter la fonctionnalité de filtrage par pays d'origine,
 //     en reprenant la logique des questions 3/ à 11/ sur le filtrage par style. 
+function getCountry() {
+    const array = []
+    series.forEach(serie => {
+        if(!array.includes(serie.country)) {
+
+            array.push(serie.country)   
+        }
+    });
+    return array;
+}
+
+function displayCountry(array){
+let  countries=""
+array.forEach(country=>{
+    countries+=`<li>${country}</li>`
+})
+    document.getElementById("country").innerHTML=countries
+}
+
+function getIdFromCountry(country){
+    return series.filter(serie=>serie.country==country).map(serie=>serie.id)
+}
+function manageClickCountries() {
+    document.querySelectorAll("#country > li").forEach(li => {
+        li.addEventListener("click", function (event) {
+            resetCountry()
+            this.classList.add("underline")
+        })
+    });
+}
+function resetCroissant() {
+    document.querySelectorAll("#country > li").forEach(li => {
+        li.classList.remove("underline")
+    });
+}
