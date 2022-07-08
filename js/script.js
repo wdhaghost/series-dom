@@ -196,3 +196,15 @@ function manageFavClick() {
 
 
 // 24/ Permettez à la fonction précédente de gérer un click sur un autre lien pour trier les series par années décroissantes.
+
+
+// 25/ Créer une fonction qui désactive le filtre activé.
+
+
+// 26/ Créer une fonction qui permet de gérer au clic sur un lien la désactivation des filtres.
+
+
+// 27/ Créer une fonction qui gère l'affichage de ce lien de désactivation des filtres uniquement quand un filtre est activé.
+
+
+// 28/ Créer l'ensemble des fonctions permettant d'ajouter la fonctionnalité de filtrage par pays d'origine.
