@@ -15,7 +15,6 @@ try {
         manageClickStyles();
         manageSeriesClick()
         manageFavClick()
-        // displayIdFromClick();
     }); 
 } catch (error) {
     console.error("error" + error);
@@ -207,4 +206,5 @@ function manageFavClick() {
 // 27/ Créer une fonction qui gère l'affichage de ce lien de désactivation des filtres uniquement quand un filtre est activé.
 
 
-// 28/ Créer l'ensemble des fonctions permettant d'ajouter la fonctionnalité de filtrage par pays d'origine.
+// 28/ Créer l'ensemble des fonctions permettant d'ajouter la fonctionnalité de filtrage par pays d'origine,
+//     en reprenant la logique des questions 3/ à 11/ sur le filtrage par style. 
